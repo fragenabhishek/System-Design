@@ -1,0 +1,141 @@
+Introduction to Twitter's High-Level Architecture
+Twitter is a widely used social networking platform that allows users to post and interact with short messages called tweets. Designing a system like Twitter involves addressing challenges related to scalability, performance, and reliability. This document explains the high-level architecture of Twitter, focusing on its functional and non-functional requirements, data storage strategies, and feed generation mechanisms. It also provides insights into preparing for system design interviews by breaking down the design process into questions and answers.
+
+Understanding Twitter's Functionality
+Key Features of Twitter:
+User Following:
+
+Users can follow others, and this relationship can be mutual or one-sided.
+The system must efficiently manage and retrieve follower relationships.
+Tweet Creation:
+
+Users can create tweets containing text, images, or videos.
+Tweets must be stored with metadata such as user ID, timestamp, and content.
+News Feed:
+
+Users can view a personalized feed of tweets from accounts they follow.
+The feed must be ranked and ordered based on relevance, recency, and user interactions.
+Functional and Non-Functional Requirements
+Functional Requirements:
+Users can follow and unfollow others.
+Users can create tweets with text and media.
+Users can view a personalized news feed of tweets from followed accounts.
+Users can engage with tweets by liking, retweeting, or replying.
+Non-Functional Requirements:
+Scalability: Handle millions of users and billions of daily reads.
+Low Latency: Ensure fast response times for feed generation and tweet creation.
+High Availability: The system must remain operational even during high traffic or failures.
+Data Consistency: Ensure data integrity for follower relationships and tweets.
+System Design: Questions and Answers
+Q1: How would you handle the scale of Twitter's user base?
+Problem: Twitter has approximately 500 million users, with 200 million daily active users. Each user reads around 100 tweets daily, resulting in 20 billion tweet reads per day.
+Solution:
+Use stateless application servers to handle user requests. These servers can scale horizontally to manage high traffic.
+Employ load balancers to distribute traffic across servers.
+Use read replicas for databases to handle the read-heavy nature of the system.
+Implement sharding to distribute data across multiple database instances. Use user ID as the shard key to ensure efficient data retrieval.
+Q2: How would you design the database for Twitter?
+Problem: The database must store tweets, user relationships, and metadata efficiently.
+Solution:
+Tweet Table:
+Columns: tweet_id, user_id, timestamp, content, media_reference.
+Index on user_id for efficient retrieval of tweets by a user.
+Follow Table:
+Columns: follower_id, followee_id.
+Index on follower_id for efficient retrieval of follow relationships.
+Storage Strategy:
+Use a relational database (e.g., MySQL) for structured data.
+Store media files (images, videos) in external storage like Amazon S3 or Google Cloud Storage.
+Q3: How would you handle feed generation?
+Problem: Generating a personalized feed for each user involves retrieving and ranking tweets from followed accounts.
+Solution:
+Push vs. Pull Model:
+Push Model: Precompute feeds for users by pushing new tweets to their feeds when created. This is efficient for users with few followers.
+Pull Model: Generate the feed on demand by retrieving tweets from followed accounts. This is suitable for users with many followers (e.g., celebrities).
+Message Queue:
+Use a Pub/Sub system (e.g., Kafka) to notify followers of new tweets.
+Asynchronously update feeds for users.
+Ranking:
+Use machine learning algorithms to rank tweets based on relevance, recency, and user interactions.
+Q4: How would you optimize for read-heavy operations?
+Problem: Twitter is a read-heavy system, with significantly more reads than writes.
+Solution:
+Use caching to store frequently accessed data, such as popular tweets and user feeds. Tools like Redis or Memcached can be used.
+Implement read replicas to offload read traffic from the primary database.
+Use denormalized data to reduce the need for complex joins during feed generation.
+Q5: How would you handle media storage?
+Problem: Tweets can include images and videos, which require significant storage and bandwidth.
+Solution:
+Store media files in external storage solutions like Amazon S3 or Google Cloud Storage.
+Use a Content Delivery Network (CDN) to cache and serve media files efficiently to users worldwide.
+Q6: How would you ensure scalability and fault tolerance?
+Problem: The system must handle millions of users and remain operational during failures.
+Solution:
+Use horizontal scaling for application servers and databases.
+Implement replication for databases to ensure high availability.
+Use distributed systems for load balancing and caching.
+Employ monitoring and alerting tools to detect and resolve issues proactively.
+High-Level Architecture
+User Client:
+
+Users interact with the system through web or mobile clients.
+Application Servers:
+
+Stateless servers handle user requests for creating tweets, following users, and retrieving feeds.
+Load balancers distribute traffic across servers.
+Database Layer:
+
+Relational databases store structured data (tweets, user relationships).
+Read replicas handle read-heavy traffic.
+Sharding distributes data across multiple instances.
+Caching Layer:
+
+Caches store frequently accessed data to reduce database load and improve performance.
+Media Storage:
+
+External storage solutions handle large media files.
+CDNs cache and serve media files to users.
+Message Queue:
+
+A Pub/Sub system manages notifications for new tweets and updates user feeds asynchronously.
+Data Storage and Indexing Strategies
+Sharding:
+
+Distribute data across multiple database instances using user ID as the shard key.
+Indexing:
+
+Index tweets by user_id for efficient retrieval.
+Index follow relationships by follower_id.
+Read Replicas:
+
+Use replicas to handle read-heavy traffic and reduce the load on the primary database.
+Feed Generation and Updates
+Feed Generation:
+
+Retrieve tweets from followed accounts.
+Rank tweets using machine learning algorithms.
+Cache the feed for faster retrieval.
+Feed Updates:
+
+Use a message queue to notify followers of new tweets.
+Update feeds asynchronously for users with many followers.
+Preparing for a System Design Interview
+Key Steps:
+Understand Requirements:
+
+Clarify functional and non-functional requirements with the interviewer.
+Prioritize features based on the time available.
+Break Down the Problem:
+
+Divide the system into components (e.g., user management, tweet storage, feed generation).
+Discuss Trade-Offs:
+
+Explain the trade-offs between different design choices (e.g., relational vs. NoSQL databases, push vs. pull models).
+Use Diagrams:
+
+Draw high-level architecture diagrams to illustrate your design.
+Handle Edge Cases:
+
+Discuss how the system handles edge cases, such as users with millions of followers or high traffic spikes.
+Conclusion
+Designing a system like Twitter requires careful consideration of scalability, performance, and reliability. By breaking down the problem into smaller components and addressing key challenges, you can demonstrate your ability to design complex systems effectively. Preparing for system design interviews involves understanding trade-offs, prioritizing requirements, and communicating your design clearly.
